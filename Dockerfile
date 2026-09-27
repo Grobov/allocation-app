@@ -31,4 +31,5 @@ USER app
 ENV FRONTEND_DIST=/app/static
 EXPOSE 8000
 # Apply migrations, optionally load demo data, then serve API + frontend.
-CMD ["sh", "-c", "alembic upgrade head && if [ \"$SEED_DEMO_DATA\" = \"true\" ]; then python -m app.seed; fi && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers"]
+# PORT is provided by platforms such as Railway; defaults to 8000.
+CMD ["sh", "-c", "alembic upgrade head && if [ \"$SEED_DEMO_DATA\" = \"true\" ]; then python -m app.seed; fi && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]

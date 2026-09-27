@@ -36,6 +36,16 @@ class Settings(BaseSettings):
     )
     sql_echo: bool = False
 
+    @field_validator("database_url")
+    @classmethod
+    def _use_psycopg_driver(cls, value: str) -> str:
+        # Hosting providers (Railway, Heroku, ...) hand out "postgres://" or "postgresql://"
+        # URLs, which SQLAlchemy maps to psycopg2; this project ships psycopg (v3).
+        for prefix in ("postgres://", "postgresql://"):
+            if value.startswith(prefix):
+                return "postgresql+psycopg://" + value[len(prefix) :]
+        return value
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def _split_origins(cls, value: object) -> object:

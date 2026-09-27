@@ -57,3 +57,11 @@ def test_serves_frontend_build(tmp_path: Path, database_url: str) -> None:
         assert client.get("/api/v1/unknown").status_code == 404
         assert client.get("/api/v1/health").status_code == 200
     app.state.engine.dispose()
+
+
+def test_provider_postgres_urls_use_psycopg_driver() -> None:
+    for url in ("postgres://u:p@host:5432/db", "postgresql://u:p@host:5432/db"):
+        assert Settings(database_url=url).database_url == "postgresql+psycopg://u:p@host:5432/db"
+    explicit = "postgresql+psycopg://u:p@host/db"
+    assert Settings(database_url=explicit).database_url == explicit
+    assert Settings(database_url="sqlite:///x.db").database_url == "sqlite:///x.db"
