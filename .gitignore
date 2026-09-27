@@ -25,3 +25,4 @@ frontend/playwright-report/
 .DS_Store
 .idea/
 .vscode/
+backend/e2e.db

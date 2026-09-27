@@ -1,0 +1,35 @@
+import { test } from '@playwright/test'
+
+// Not a test of behaviour: captures screenshots for visual review (SCREENSHOTS=1).
+test.skip(!process.env.SCREENSHOTS, 'screenshots only on demand')
+
+test('capture screenshots', async ({ page }) => {
+  const dir = process.env.SCREENSHOTS!
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await page.goto('/')
+  await page.getByRole('heading', { name: 'Payments' }).waitFor()
+  await page.screenshot({ path: `${dir}/dashboard.png`, fullPage: true })
+  await page.getByRole('tab', { name: 'Core Platform' }).click()
+  await page.screenshot({ path: `${dir}/dashboard-core.png`, fullPage: true })
+  await page.getByRole('tab', { name: 'New Initiatives' }).click()
+  await page.screenshot({ path: `${dir}/dashboard-empty-cluster.png`, fullPage: true })
+  await page.getByRole('tab', { name: 'Payments' }).click()
+  await page.getByRole('button', { name: 'Actions for project Payment Gateway' }).click()
+  await page.screenshot({ path: `${dir}/menu.png` })
+  await page.getByRole('menuitem', { name: 'Edit project' }).click()
+  await page.screenshot({ path: `${dir}/project-edit.png` })
+  await page.keyboard.press('Escape')
+  await page.getByRole('button', { name: 'Edit allocation of Anna Melnyk' }).click()
+  await page.screenshot({ path: `${dir}/allocation-edit.png` })
+  await page.keyboard.press('Escape')
+  await page.getByRole('button', { name: '+ Allocate engineer' }).first().click()
+  await page.screenshot({ path: `${dir}/allocation-create.png` })
+  await page.keyboard.press('Escape')
+  await page.getByRole('link', { name: 'Engineers' }).click()
+  await page.getByRole('heading', { name: 'Engineers' }).waitFor()
+  await page.screenshot({ path: `${dir}/engineers.png`, fullPage: true })
+  await page.setViewportSize({ width: 390, height: 900 })
+  await page.goto('/')
+  await page.getByRole('heading', { name: 'Payments' }).waitFor()
+  await page.screenshot({ path: `${dir}/mobile.png`, fullPage: true })
+})
