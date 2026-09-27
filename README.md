@@ -64,6 +64,23 @@ cd frontend && npm run build
 cd ../backend && FRONTEND_DIST=../frontend/dist uv run uvicorn app.main:app --port 8000
 ```
 
+### Option C – Deploy to Railway
+
+The repository is Railway-ready: `railway.json` builds the root `Dockerfile` and health-checks
+`/api/v1/health`; the container applies migrations on start and listens on Railway's `$PORT`.
+
+1. In your Railway project, click **+ Create → Database → PostgreSQL**.
+2. Open the service deployed from this repository → **Variables** and add:
+   - `DATABASE_URL` = `${{Postgres.DATABASE_URL}}` (reference to the Postgres service;
+     `postgres://`/`postgresql://` URLs are converted to the psycopg driver automatically)
+   - `SEED_DEMO_DATA` = `true` to load demo data on first start (omit or `false` for an empty app)
+   - optional `TIMEZONE` (e.g. `Europe/Kyiv`) so "today" matches your team
+3. **Settings → Networking → Generate Domain** to get a public URL.
+4. Redeploy. The app is at `https://<your-domain>/`, API docs at `/api/docs`.
+
+`CORS_ORIGINS` is not needed: the frontend is served by the same service (same origin).
+Note that the app has no authentication yet, so anyone with the URL can edit data.
+
 ### Configuration (backend environment variables)
 
 | Variable        | Default                               | Purpose                                             |
